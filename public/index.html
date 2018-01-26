@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Employee App</title>
+    <style type="text/css">
+ td {
+  padding: 0px 50px 0px 50px;
+ }
+</style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/angularjs-datepicker/2.1.23/angular-datepicker.css" rel="stylesheet" type="text/css" />
+
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+      <link rel="stylesheet" href=" https://cdnjs.cloudflare.com/ajax/libs/bootstrap-sweetalert/1.0.1/sweetalert.css">
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-sweetalert/1.0.1/sweetalert.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>    
+    
+</head>
+<body ng-app="myapp" ng-controller="mycntrl" ng-init="init()">
+
+<div class="container" >
+    <h2><center>Employee Directory App</center></h2>
+   
+    <form name="myForm" class="form-group">
+  <table class="table">
+    <thead>
+                
+      <tr>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Dob</th>
+        <th>Department</th>
+        <th>Gender</th> 
+        <th>Age</th> 
+  
+          
+          
+      </tr>
+    </thead>
+    <tbody>
+       
+        <tr>
+        <td>
+            <input type="text" name="name" ng-model="name" class="form-control" placeholder="Name" required>
+            
+            </td>
+        <td>
+            <input type="email" name="email" ng-model ="email" class="form-control" placeholder="abc@d" required>
+            </td>
+            <td>
+        
+       
+  
+     <datepicker date-format="MMM d, y">
+           <input type="text" name="dob" ng-model ="dob" class="form-control" ng-change="da()" placeholder="Dob" required>
+         </datepicker>   
+         </td>
+             <td>
+            <input type="text" name="department" ng-model ="department" class="form-control" placeholder="department" required>
+            </td>
+             <td>
+<!--            <input type="text" name="gender" ng-model ="gender" class="form-control" placeholder="gender" required>-->
+            
+            <select class="form-control" id="gender" ng-model="gender" name="gender" required>
+      <option value="Male">Male</option>
+      <option value="Female">Female</option>
+       <option value="Other">Other</option>         
+                
+   
+    </select>
+      
+                 
+            </td>
+             <td>
+            <input type="text" id="age" ng-model ="age" class="form-control" placeholder="Age" disabled>
+            </td>
+           
+            <td><button  type="button" id="first" class="btn btn-primary" ng-disabled="myForm.$invalid" ng-click="click()">Add</button></td>
+            <td><button  type="button" id="second" class="btn btn-success" ng-click="reset()">Reset</button></td><br>
+          
+                </tr>
+        
+        
+        
+        
+       
+        
+        
+     
+        
+    <tr ng-repeat="x in data">
+        <td>{{x.name}}</td>
+        <td>{{x.email}}</td>
+        <td>{{x.dob}}</td>
+        <td>{{x.department}}</td>
+        <td>{{x.gender}}</td>
+        <td>{{x.age}}</td>
+        <td><button type="button" class="btn btn-info" ng-click="update()">Update</button></td>
+        <td><button type="button" class="btn btn-danger" ng-click="delete()">Delete</button></td>
+        </tr>    
+        
+     
+    </tbody>
+  </table>
+    </form>
+    
+        
+    
+    
+    </div>
+    
+    
+    
+</body>
+<script>
+    var app=angular.module('myapp',['720kb.datepicker']);
+    app.controller('mycntrl',function($scope,$http){
+        
+        
+        
+   
+        
+        
+        
+        
+        $scope.da =function()
+            {
+               // console.log('date modifying');
+                var d = new Date($scope.dob);
+           // console.log(d);
+                var n= new Date();
+                
+                var agee=n.getFullYear()-d.getFullYear();
+                if(n.getMonth()<d.getMonth())
+                {
+                agee--;
+                }
+
+                else if(n.getMonth()==d.getMonth())
+                {
+                if(n.getDate()<d.getDate())
+                {
+                agee--;
+                }
+                }
+
+                $scope.age= agee;
+
+
+
+                }
+
+
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        $scope.init =function(){
+            
+            $scope.cupdate=0;
+              $scope.name="";
+            $scope.email="";
+            $scope.dob="";
+            $scope.department="";
+            $scope.gender="";
+            $scope.age="";
+            
+         
+            document.getElementById('first').innerHTML='Add';
+            document.getElementById('second').innerHTML='Reset';
+           
+            
+            $http({
+            method: 'GET',
+            url: '/getuser'
+            }).then(function successCallback(response) {
+           // console.log(response);
+             if(response.status===200)
+                 {
+               //      console.log(response.data);
+                     $scope.data=response.data;
+                 }
+             
+             
+                    // this callback will be called asynchronously
+                    // when the response is available
+             
+            }, function errorCallback(response) {
+                    // called asynchronously if an error occurs
+                // or server returns response with an error status.
+             
+                });
+              
+            
+        };
+        
+        
+        $scope.update =function()
+        {
+            $scope.id=this.x._id;
+            $scope.name=this.x.name;
+            $scope.email=this.x.email;
+            $scope.dob=this.x.dob;
+            $scope.department=this.x.department;
+            $scope.gender=this.x.gender;
+            $scope.age=this.x.age;
+            document.getElementById('first').innerHTML='confirm';
+            document.getElementById('second').innerHTML='back';
+            $scope.cupdate=1;
+        }
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        $scope.reset =function(){
+            $scope.name="";
+            $scope.email="";
+            $scope.dob="";
+            $scope.department="";
+            $scope.gender="";
+            $scope.age="";
+            
+            $scope.cupdate=0;
+            document.getElementById('first').innerHTML='Add';
+            document.getElementById('second').innerHTML='Reset';
+            
+        };
+        
+        
+        
+        $scope.delete= function()
+        {
+            
+            
+            
+           
+                
+                
+            
+                $http({
+                    method: 'DELETE',
+                    url: `/delete/${this.x._id}`
+               
+                  })
+                    .then(function(response) {
+                        if(response.data.status===200)
+                            {
+                                $http({
+                                method: 'GET',
+                                url: '/getuser'
+                               }).then(function successCallback(response) {
+                              //  console.log(response);
+                                if(response.status===200)
+                                    {
+                                       // console.log(response.data);
+                                        $scope.data=response.data;
+                                    }
+                                }, function errorCallback(response) {
+                             
+                                    });
+                                
+                                
+                            }
+                        
+                        else if(response.data.status===400)
+                            {
+                        //        console.log(`No such user exists`);
+                            }
+                
+                
+                
+                    }, function(rejection) {
+                  //  console.log(rejection);
+                        });
+            
+                
+                
+                
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+          
+            
+        };
+        
+        
+        
+        
+    
+        $scope.click= function()
+        {
+           // console.log(myForm.name.$valid);
+            var data={id:$scope.id,
+                      name:$scope.name,
+                      email:$scope.email,
+                      dob:$scope.dob,
+                      department:$scope.department,
+                      gender:$scope.gender,
+                      age:$scope.age};
+        
+           
+            
+            if($scope.cupdate===0)
+            {
+            
+          $http.post('/post',data).then(function(response) {
+//                console.log('Response is');
+//                console.log(response);
+//                console.log('testing');
+//                console.log(response.data.status);
+              if(response.data.status===200)
+                  {
+                      //console.log('Successfully registered');
+                      swal("Good job!", "Employee succesfully added!", "success")
+                      
+                      $scope.init();
+                      
+                      }
+              else if(response.data.status==400)
+                  {
+                      //console.log('Already exist');
+                      
+                      swal ( "Oops" ,  "Email id already exist!" ,  "error" );
+
+                  }
+              
+              
+              
+          }).catch(function(response){
+              var err = response.data;
+    // process error
+          });
+            
+         
+            
+            
+            }
+            
+            
+        else if($scope.cupdate===1)
+            {
+                
+                
+                $http.put('/put', data).then(function (response) {
+
+                        if(response.data.status===200)
+                            {
+                                swal("Good job!", "Employee updated succesfully!", "success")
+                                //console.log(`Successfully updated`);
+                                $scope.init();
+                            }
+                    
+                        else if(response.data.status===400)
+                            {
+                                swal ( "Oops" ,  "Email id already exists!" ,  "error" );
+                             //   console.log(`Email already exist`);
+                            }
+
+                            }, function (response) {
+
+                    // this function handles error
+
+                    });
+                
+            }
+            
+            
+         
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+        };
+        
+        
+        
+        
+        
+        });
+            
+            
+            
+            
+//        };
+//        
+//    });
+    
+    
+    
+    
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angularjs-datepicker/2.1.23/angular-datepicker.js"></script>
+</html>
