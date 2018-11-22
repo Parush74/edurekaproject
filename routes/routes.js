@@ -19,6 +19,7 @@ router.post('/post',function(req,res){
     
     newuser.save(function(err,savedUser){
           if(err){
+             console.log(err);
          console.log("User already exists with that email");
              res.json({status:400,data:{}});
 //         var message="A user already exists with that username or email";
